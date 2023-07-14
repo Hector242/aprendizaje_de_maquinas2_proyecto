@@ -7,3 +7,4 @@ jupyter
 imbalanced-learn
 datetime
 scipy
+statsmodels
