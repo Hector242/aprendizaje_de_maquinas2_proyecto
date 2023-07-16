@@ -3,12 +3,14 @@ feature_engineering.py
 
 COMPLETAR DOCSTRING
 
-DESCRIPCIÓN:
-AUTOR:
-FECHA:
+DESCRIPTIÓN: In this code feature engineering for the dataset It's been done 
+AUTOR: Hector Sanchez
+FECHA:-
 """
 
 # Imports
+import pandas as pd
+import numpy as np
 
 class FeatureEngineeringPipeline(object):
 
@@ -19,13 +21,21 @@ class FeatureEngineeringPipeline(object):
     def read_data(self) -> pd.DataFrame:
         """
         COMPLETAR DOCSTRING 
-        
+        In this function we read the whole dataset
         :return pandas_df: The desired DataLake table as a DataFrame
         :rtype: pd.DataFrame
         """
             
-        # COMPLETAR CON CÓDIGO
+        # Reading Test and Train datasets
+        data_train = pd.read_csv(f'{self.input_path}/Train_BigMart.csv')
+        data_test = pd.read_csv(f'{self.input_path}/Test_BigMart.csv')
+
+        # label both df to merge them and be able to split them
+        data_train['Set'] = 'train'
+        data_test['Set'] = 'test'
         
+        # Mergin both df in one
+        pandas_df = pd.concat([data_train, data_test], ignore_index=True, sort=False)
         return pandas_df
 
     
@@ -35,7 +45,14 @@ class FeatureEngineeringPipeline(object):
         
         """
         
-        # COMPLETAR CON CÓDIGO
+        # FE: Calculing how old is the shop (current year - Establishment_Year)
+        df['Outlet_Establishment_Year'] = 2020 - df['Outlet_Establishment_Year']
+
+        # Cleaning: Unifying labels for 'Item_Fat_Content'
+        df['Item_Fat_Content'] = df['Item_Fat_Content'].replace({'low fat':  'Low Fat', 
+                                                                     'LF': 'Low Fat', 
+                                                                     'reg': 'Regular'})
+
         
         return df_transformed
 
@@ -57,5 +74,5 @@ class FeatureEngineeringPipeline(object):
 
   
 if __name__ == "__main__":
-    FeatureEngineeringPipeline(input_path = 'Ruta/De/Donde/Voy/A/Leer/Mis/Datos',
-                               output_path = 'Ruta/Donde/Voy/A/Escribir/Mi/Archivo').run()
+    FeatureEngineeringPipeline(input_path = '../data',
+                               output_path = '../outputs/').run()
