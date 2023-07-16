@@ -53,6 +53,12 @@ class FeatureEngineeringPipeline(object):
                                                                      'LF': 'Low Fat', 
                                                                      'reg': 'Regular'})
 
+        # cleaning: Imputing with similar values.
+        item_list = list(df[df['Item_Weight'].isnull()]['Item_Identifier'].unique()) # making a list
+        for item in item_list:
+            mode = (df[df['Item_Identifier'] == item][['Item_Weight']]).mode().iloc[0,0] # taking the mode
+            df.loc[df['Item_Identifier'] == item, 'Item_Weight'] = mode # Imputing with the mode
+        
         
         return df_transformed
 
