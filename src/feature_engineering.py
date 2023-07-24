@@ -75,7 +75,7 @@ class FeatureEngineeringPipeline(object):
         # FEATURES ENGINEERING: setting new categorie for 'Item_Fat_Content'
         product_list = ['Household', 'Health and Hygiene', 'Hard Drinks',
                         'Hard Drinks', 'Soft Drinks', 'Fruits and Vegetables']
-        for product in product_list:
+        for product in range(len(product_list)):
             df.loc[df['Item_Type'] == product_list[product], 'Item_Fat_Content'] = 'NA'
 
         # FEATURES ENGINEERING: building categories for 'Item_Type'
@@ -130,8 +130,8 @@ class FeatureEngineeringPipeline(object):
         df_test.drop(['Item_Outlet_Sales','Set'], axis=1, inplace=True)
 
         # save datasets
-        df_train.to_csv(f"{self.output_path}/train_final.csv")
-        df_test.to_csv(f"{self.output_path}/test_final.csv")
+        df_train.to_csv(self.output_path + '/train_final.csv')
+        df_test.to_csv(self.output_path + '/test_final.csv')
 
         return None
 
