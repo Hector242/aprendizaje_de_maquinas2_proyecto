@@ -20,17 +20,15 @@ class FeatureEngineeringPipeline(object):
 
     def read_data(self) -> pd.DataFrame:
         """
-        DOCSTRING
-
         In this function load & build the dataset
 
         :return pandas_df: The desired DataLake table as a DataFrame
         :rtype: pd.DataFrame
         """
-            
+
         # Reading Test and Train datasets
-        data_train = pd.read_csv(f'{self.input_path}/Train_BigMart.csv')
-        data_test = pd.read_csv(f'{self.input_path}/Test_BigMart.csv')
+        data_train = pd.read_csv(self.input_path + '/Train_BigMart.csv')
+        data_test = pd.read_csv(self.input_path + '/Test_BigMart.csv')
 
         # label both df to merge them and be able to split them
         data_train['Set'] = 'train'
@@ -49,10 +47,10 @@ class FeatureEngineeringPipeline(object):
         dataframe with the data transformed 
 
         :param df: Dataframe to be transform
-        :type df: Dataframe
+        :type df: pd.DataFrame
 
         :return df_transformed: Dataframe transformed
-        :rtype: Dataframe 
+        :rtype: pd.DataFrame 
         """
         
         # FEATURES ENGINEERING: Calculing how old is the shop (current year - Establishment_Year)
@@ -80,18 +78,61 @@ class FeatureEngineeringPipeline(object):
         for product in product_list:
             df.loc[df['Item_Type'] == product_list[product], 'Item_Fat_Content'] = 'NA'
 
+        # FEATURES ENGINEERING: building categories for 'Item_Type'
+        dict_Item_Type = {'Others': 'Non perishable', 'Health and Hygiene': 'Non perishable', 
+                          'Household': 'Non perishable', 'Seafood': 'Meats', 'Meat': 'Meats',
+                          'Baking Goods': 'Processed Foods', 'Frozen Foods': 'Processed Foods', 
+                          'Canned': 'Processed Foods', 'Snack Foods': 'Processed Foods',
+                          'Breads': 'Starchy Foods', 'Breakfast': 'Starchy Foods',
+                          'Soft Drinks': 'Drinks', 'Hard Drinks': 'Drinks', 'Dairy': 'Drinks'}
+        
+        df['Item_Type'] = df['Item_Type'].replace(dict_Item_Type)
 
-        df_transformed = None
+        # FEATURES ENGINEERING: adding new categorie to 'Item_Fat_Content'
+        df.loc[df['Item_Type'] == 'Non perishable', 'Item_Fat_Content'] = 'NA'
+
+        # FEATURES ENGINEERING: encoding prices levels in 'Item_MRP'
+        df['Item_MRP'] = pd.qcut(df['Item_MRP'], 4, labels = [1, 2, 3, 4])
+
+        # FEATURES ENGINEERING: encoding ordinal variable
+        dataframe = df.drop(columns=['Item_Type', 'Item_Fat_Content']).copy()
+
+        dict_outlet_size = {'High': 2, 'Medium': 1, 'Small': 0}
+        dict_location_type = {'Tier 1': 2, 'Tier 2': 1, 'Tier 3': 0}
+
+        dataframe['Outlet_Size'] = dataframe['Outlet_Size'].replace(dict_outlet_size)
+        dataframe['Outlet_Location_Type'] = dataframe['Outlet_Location_Type'].replace(dict_location_type)
+
+        # FEATURES ENGINEERING: encoding nominal variable
+        dataframe = pd.get_dummies(dataframe, columns=['Outlet_Type'])
+
+        df_transformed = dataframe.copy()
         return df_transformed
 
     def write_prepared_data(self, transformed_dataframe: pd.DataFrame) -> None:
         """
-        COMPLETAR DOCSTRING
-        
+        This fuction will split the data in test & train and the will save it in
+        .csv files.
+
+        :param transformed_dataframe: dataframe transformed
+        :type transformed_dataframe: pd.DataFrame
         """
         
-        # COMPLETAR CON CÓDIGO
-        
+        # Drop non informative features
+        dataset = transformed_dataframe.drop(columns=['Item_Identifier', 'Outlet_Identifier'])
+
+        # split train & test
+        df_train = dataset.loc[dataset['Set'] == 'train']
+        df_test = dataset.loc[dataset['Set'] == 'test']
+
+        # drop features witout data
+        df_train.drop(['Set'], axis=1, inplace=True)
+        df_test.drop(['Item_Outlet_Sales','Set'], axis=1, inplace=True)
+
+        # save datasets
+        df_train.to_csv(f"{self.output_path}/train_final.csv")
+        df_test.to_csv(f"{self.output_path}/test_final.csv")
+
         return None
 
     def run(self):
@@ -102,4 +143,4 @@ class FeatureEngineeringPipeline(object):
 
 if __name__ == "__main__":
     FeatureEngineeringPipeline(input_path = '../data',
-                               output_path = '../outputs/').run()
+                               output_path = '../outputs').run()
