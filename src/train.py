@@ -9,6 +9,11 @@ FECHA:
 """
 
 # Imports
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split, cross_validate, cross_val_score
+from sklearn import metrics
+from sklearn.linear_model import LinearRegression
 
 class ModelTrainingPipeline(object):
 
@@ -18,13 +23,14 @@ class ModelTrainingPipeline(object):
 
     def read_data(self) -> pd.DataFrame:
         """
-        COMPLETAR DOCSTRING 
+        This function will read the training dataset
         
         :return pandas_df: The desired DataLake table as a DataFrame
         :rtype: pd.DataFrame
         """
             
         # COMPLETAR CON CÓDIGO
+
         
         return pandas_df
 
@@ -57,5 +63,5 @@ class ModelTrainingPipeline(object):
 
 if __name__ == "__main__":
 
-    ModelTrainingPipeline(input_path = 'Ruta/De/Donde/Voy/A/Leer/Mis/Datos',
-                          model_path = 'Ruta/Donde/Voy/A/Escribir/Mi/Modelo').run()
+    ModelTrainingPipeline(input_path = '../features',
+                          model_path = '../model_trained').run()

@@ -143,4 +143,4 @@ class FeatureEngineeringPipeline(object):
 
 if __name__ == "__main__":
     FeatureEngineeringPipeline(input_path = '../data',
-                               output_path = '../outputs').run()
+                               output_path = '../features').run()
