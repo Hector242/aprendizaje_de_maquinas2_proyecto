@@ -14,6 +14,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split, cross_validate, cross_val_score
 from sklearn import metrics
 from sklearn.linear_model import LinearRegression
+import pickle
 
 class ModelTrainingPipeline(object):
 
@@ -28,22 +29,38 @@ class ModelTrainingPipeline(object):
         :return pandas_df: The desired DataLake table as a DataFrame
         :rtype: pd.DataFrame
         """
-            
-        # COMPLETAR CON CÓDIGO
-
+        pandas_df = pd.read_csv(self.input_path + '/train_final.csv')
         
         return pandas_df
 
     
-    def model_training(self, df: pd.DataFrame) -> pd.DataFrame:
+    def model_training(self, df: pd.DataFrame) -> object:
         """
-        COMPLETAR DOCSTRING
-        
+        This function will build & train the model
+
+        :param df: training dataset
+        :type df: pd.Dataframe
+
+        :rparam model_trained: returns the model trained
+        :rtype model_trained: object
         """
+        df_train = df.copy()
+        seed = 28
+        model = LinearRegression()
+
+        # split dataset in training & validation
+        X = df_train.drop(columns='Item_Outlet_Sales') # Drop feature to predict
+        x_train, _, y_train, _ = train_test_split(X,
+                                                  df_train['Item_Outlet_Sales'],
+                                                  test_size = 0.3,
+                                                  random_state=seed)
         
-        # COMPLETAR CON CÓDIGO
-        
-        return df_transformed
+        # model training
+        model.fit(x_train,y_train)
+
+        # return model trained
+        model_trained = model
+        return model_trained
 
     def model_dump(self, model_trained) -> None:
         """
