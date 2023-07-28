@@ -130,8 +130,8 @@ class FeatureEngineeringPipeline(object):
         df_test.drop(['Item_Outlet_Sales','Set'], axis=1, inplace=True)
 
         # save datasets
-        df_train.to_csv(self.output_path + '/train_final.csv')
-        df_test.to_csv(self.output_path + '/test_final.csv')
+        df_train.to_csv(self.output_path + '/train_final.csv', index=False)
+        df_test.to_csv(self.output_path + '/test_final.csv', index=False)
 
         return None
 
