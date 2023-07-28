@@ -64,12 +64,19 @@ class ModelTrainingPipeline(object):
 
     def model_dump(self, model_trained) -> None:
         """
-        COMPLETAR DOCSTRING
+        this function will save the model trained as a 
+        pickle file
         
+        :param model_trained: model trained
+        :type model_trained: object
         """
+        # file name & path
+        model_pkl_file = self.model_path + '/model.pkl'
         
-        # COMPLETAR CON CÓDIGO
-        
+        # save in binary wb (write binary)
+        with open(model_pkl_file, 'wb') as file:
+            pickle.dump(model_trained, file)
+
         return None
 
     def run(self):
