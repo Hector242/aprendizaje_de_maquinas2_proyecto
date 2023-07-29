@@ -9,6 +9,12 @@ FECHA:
 """
 
 # Imports
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split, cross_validate, cross_val_score
+from sklearn import metrics
+from sklearn.linear_model import LinearRegression
+import pickle
 
 class MakePredictionPipeline(object):
     
@@ -62,9 +68,9 @@ class MakePredictionPipeline(object):
 
 if __name__ == "__main__":
     
-    spark = Spark()
+    #spark = Spark()
     
-    pipeline = MakePredictionPipeline(input_path = 'Ruta/De/Donde/Voy/A/Leer/Mis/Datos',
-                                      output_path = 'Ruta/Donde/Voy/A/Escribir/Mis/Datos',
-                                      model_path = 'Ruta/De/Donde/Voy/A/Leer/Mi/Modelo')
+    pipeline = MakePredictionPipeline(input_path = '../features',
+                                      output_path = '../predictions',
+                                      model_path = '../model_trained')
     pipeline.run()  
