@@ -125,7 +125,7 @@ class FeatureEngineeringPipeline(object):
         df_train = dataset.loc[dataset['Set'] == 'train']
         df_test = dataset.loc[dataset['Set'] == 'test']
 
-        # drop features witout data
+        # drop features without data
         df_train.drop(['Set'], axis=1, inplace=True)
         df_test.drop(['Item_Outlet_Sales','Set'], axis=1, inplace=True)
 
