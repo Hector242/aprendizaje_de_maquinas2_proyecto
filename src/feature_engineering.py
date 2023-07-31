@@ -131,13 +131,16 @@ class FeatureEngineeringPipeline(object):
         df_train = dataset.loc[dataset['Set'] == 'train']
         df_test = dataset.loc[dataset['Set'] == 'test']
 
+        df_train_copy = df_train.copy()
+        df_test_copy = df_test.copy()
+
         # drop features without data
-        df_train.drop(['Set'], axis=1, inplace=True)
-        df_test.drop(['Item_Outlet_Sales','Set'], axis=1, inplace=True)
+        df_train_copy.drop(['Set'], axis=1, inplace=True)
+        df_test_copy.drop(['Item_Outlet_Sales','Set'], axis=1, inplace=True)
 
         # save datasets
-        df_train.to_csv(self.output_path + '/train_final.csv', index=False)
-        df_test.to_csv(self.output_path + '/test_final.csv', index=False)
+        df_train_copy.to_csv(self.output_path + '/train_final.csv', index=False)
+        df_test_copy.to_csv(self.output_path + '/test_final.csv', index=False)
 
         return None
 
