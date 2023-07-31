@@ -9,12 +9,16 @@ FECHA:
 """
 
 # Imports
+import sys
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split, cross_validate, cross_val_score
 from sklearn import metrics
 from sklearn.linear_model import LinearRegression
 import pickle
+
+# avoiding traceback
+sys.excepthook = lambda exctype,exc,traceback : print("{}: {}".format(exctype.__name__,exc))
 
 class MakePredictionPipeline(object):
     
@@ -31,8 +35,11 @@ class MakePredictionPipeline(object):
         :rparam test_dataset: dataset to evaluate the model with
         .rtype test_dataset: pd.Dataframe
         """
-        # Load test dataset
-        test_dataset = pd.read_csv(self.input_path + '/test_final.csv')
+        try:
+            # Load test dataset
+            test_dataset = pd.read_csv(self.input_path + '/test_final.csv')
+        except FileNotFoundError:
+            print("file or directory not found ->" + self.input_path + "/test_final.csv")
 
         return test_dataset
 

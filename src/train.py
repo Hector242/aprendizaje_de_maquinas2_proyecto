@@ -9,12 +9,14 @@ FECHA:
 """
 
 # Imports
+import sys
 import pandas as pd
-import numpy as np
-from sklearn.model_selection import train_test_split, cross_validate, cross_val_score
-from sklearn import metrics
+from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 import pickle
+
+# avoiding traceback
+sys.excepthook = lambda exctype,exc,traceback : print("{}: {}".format(exctype.__name__,exc))
 
 class ModelTrainingPipeline(object):
 
@@ -29,7 +31,10 @@ class ModelTrainingPipeline(object):
         :return pandas_df: The desired DataLake table as a DataFrame
         :rtype: pd.DataFrame
         """
-        pandas_df = pd.read_csv(self.input_path + '/train_final.csv')
+        try:
+            pandas_df = pd.read_csv(self.input_path + '/train_final.csv')
+        except FileNotFoundError:
+            print("file or directory not found ->" + self.input_path + "/train_final.csv") 
         
         return pandas_df
 

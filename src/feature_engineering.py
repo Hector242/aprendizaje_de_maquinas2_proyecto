@@ -9,8 +9,12 @@ FECHA:-
 """
 
 # Imports
+import sys
 import pandas as pd
 import numpy as np
+
+# avoiding traceback
+sys.excepthook = lambda exctype,exc,traceback : print("{}: {}".format(exctype.__name__,exc))
 
 class FeatureEngineeringPipeline(object):
 
@@ -25,10 +29,12 @@ class FeatureEngineeringPipeline(object):
         :return pandas_df: The desired DataLake table as a DataFrame
         :rtype: pd.DataFrame
         """
-
-        # Reading Test and Train datasets
-        data_train = pd.read_csv(self.input_path + '/Train_BigMart.csv')
-        data_test = pd.read_csv(self.input_path + '/Test_BigMart.csv')
+        try:
+            # Reading Test and Train datasets
+            data_train = pd.read_csv(self.input_path + '/Train_BigMart.csv')
+            data_test = pd.read_csv(self.input_path + '/Test_BigMart.csv')
+        except FileNotFoundError:
+            print("file or directory not found. Please double check the path and names")
 
         # label both df to merge them and be able to split them
         data_train['Set'] = 'train'
