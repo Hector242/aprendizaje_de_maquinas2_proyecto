@@ -75,9 +75,6 @@ class MakePredictionPipeline(object):
         # rename output column
         y_pred.rename(columns={0:'y_predicted'}, inplace= True)
 
-        # convert to dataframe
-        y_pred = pd.DataFrame(y_pred)
-
         return y_pred
 
 
