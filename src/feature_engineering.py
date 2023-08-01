@@ -9,12 +9,22 @@ FECHA:-
 """
 
 # Imports
+import logging
 import sys
 import pandas as pd
 import numpy as np
 
 # avoiding traceback
 sys.excepthook = lambda exctype,exc,traceback : print("{}: {}".format(exctype.__name__,exc))
+
+# adding logging
+logging.basicConfig(
+    filename='../logs/featureEng.log',
+    level=logging.INFO,
+    filemode='w',
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+)
 
 class FeatureEngineeringPipeline(object):
 
@@ -29,12 +39,18 @@ class FeatureEngineeringPipeline(object):
         :return pandas_df: The desired DataLake table as a DataFrame
         :rtype: pd.DataFrame
         """
+        logging.info("INIT: load train and test datasets")
         try:
             # Reading Test and Train datasets
             data_train = pd.read_csv(self.input_path + '/Train_BigMart.csv')
+            logging.info("SUCCESS: training data was loaded successfully")
+
             data_test = pd.read_csv(self.input_path + '/Test_BigMart.csv')
+            logging.info("SUCCESS: test data was loaded successfully")
+
         except FileNotFoundError:
             print("file or directory not found. Please double check the path and names")
+            logging.error("FAILED: file or directory not found")
 
         # label both df to merge them and be able to split them
         data_train['Set'] = 'train'
@@ -58,7 +74,7 @@ class FeatureEngineeringPipeline(object):
         :return df_transformed: Dataframe transformed
         :rtype: pd.DataFrame 
         """
-        
+        logging.info("INIT: data transformation")
         # FEATURES ENGINEERING: Calculing how old is the shop (current year - Establishment_Year)
         df['Outlet_Establishment_Year'] = 2020 - df['Outlet_Establishment_Year']
 
@@ -113,6 +129,8 @@ class FeatureEngineeringPipeline(object):
         dataframe = pd.get_dummies(dataframe, columns=['Outlet_Type'])
 
         df_transformed = dataframe.copy()
+        logging.info("SUCCESS: data was successfully transformed")
+
         return df_transformed
 
     def write_prepared_data(self, transformed_dataframe: pd.DataFrame) -> None:
@@ -123,7 +141,7 @@ class FeatureEngineeringPipeline(object):
         :param transformed_dataframe: dataframe transformed
         :type transformed_dataframe: pd.DataFrame
         """
-        
+        logging.info("INIT: saving train & test data")
         # Drop non informative features
         dataset = transformed_dataframe.drop(columns=['Item_Identifier', 'Outlet_Identifier'])
 
@@ -141,6 +159,7 @@ class FeatureEngineeringPipeline(object):
         # save datasets
         df_train_copy.to_csv(self.output_path + '/train_final.csv', index=False)
         df_test_copy.to_csv(self.output_path + '/test_final.csv', index=False)
+        logging.info("SUCCESS: train & test data was saved successfully")
 
         return None
 

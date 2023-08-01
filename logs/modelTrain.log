@@ -1,0 +1,6 @@
+2023-08-01 17:18:52 - root - INFO - INIT: load train dataset
+2023-08-01 17:18:52 - root - INFO - SUCCESS: training data was loaded successfully
+2023-08-01 17:18:52 - root - INFO - INIT: model training started
+2023-08-01 17:18:52 - root - INFO - SUCCESS: model was successfully trained
+2023-08-01 17:18:52 - root - INFO - INIT: saving model in pkl
+2023-08-01 17:18:52 - root - INFO - SUCCESS: model was saved successfully
