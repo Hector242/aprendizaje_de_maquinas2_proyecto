@@ -8,18 +8,19 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
+# Pipeline entrypoint
 try:
+    #feature engineering script
     logging.info("INIT: feature engineering started")
-    subprocess.run(['Python', 'feature_engineering.py'], check=True)
+    subprocess.run(['Python', 'feature_engineering.py'],check=True, 
+                   capture_output=True, text=True)
     logging.info("SUCCESS: feature engineering successfully completed")
 
-except subprocess.CalledProcessError:
-    logging.error("FAILED: Opss! something went wrong in feature_engineering.py")
-
-try:
+    # train scrpt
     logging.info("INIT: model training started")
-    subprocess.run(['Python', 'train.py'],check=True)
+    subprocess.run(['Python', 'train.py'],check=True, 
+                   capture_output=True, text=True)
     logging.info("SUCCESS: model training successfully completed")
 
-except subprocess.CalledProcessError:
-    logging.error("FAILED: Opss! something went wrong in train.py")
+except subprocess.CalledProcessError as e:
+        logging.error(f"FAILED: Oops! Something went wrong in {e}")
