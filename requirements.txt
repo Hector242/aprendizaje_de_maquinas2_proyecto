@@ -9,3 +9,4 @@ datetime
 scipy
 statsmodels
 optuna
+plotly
