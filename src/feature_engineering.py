@@ -13,6 +13,7 @@ import logging
 import sys
 import pandas as pd
 import numpy as np
+import argparse
 
 # avoiding traceback
 sys.excepthook = lambda exctype,exc,traceback : print("{}: {}".format(exctype.__name__,exc))
@@ -25,6 +26,11 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S',
 )
+
+# taking arguments with json-path
+parser = argparse.ArgumentParser(description="Json from user")
+parser.add_argument("--json-path", type=str, help="Path to Json file")
+args = parser.parse_args()
 
 class FeatureEngineeringPipeline(object):
 
@@ -40,24 +46,37 @@ class FeatureEngineeringPipeline(object):
         :rtype: pd.DataFrame
         """
         logging.info("INIT: load train and test datasets")
-        try:
-            # Reading Test and Train datasets
-            data_train = pd.read_csv(self.input_path + '/Train_BigMart.csv')
-            logging.info("SUCCESS: training data was loaded successfully")
+        if args.json_path:
+            json_path = args.json_path
+            logging.info(f"Received JSON path: {json_path}")
+            try:
+                # Load json-data for inference
+                pandas_df = pd.read_json(json_path, orient='index').T
+                logging.info("dataset from json loaded")
 
-            data_test = pd.read_csv(self.input_path + '/Test_BigMart.csv')
-            logging.info("SUCCESS: test data was loaded successfully")
+            except ValueError as ve:
+                logging.error(f"FAILED: ValueError occurred during prediction: {ve}")
+            except Exception as e:
+                logging.error(f"FAILED: An unexpected error occurred during prediction: {e}")
+        else:
+            try:
+                # Reading Test and Train datasets
+                data_train = pd.read_csv(self.input_path + '/Train_BigMart.csv')
+                logging.info("SUCCESS: training data was loaded successfully")
 
-        except FileNotFoundError:
-            print("file or directory not found. Please double check the path and names")
-            logging.error("FAILED: file or directory not found")
+                data_test = pd.read_csv(self.input_path + '/Test_BigMart.csv')
+                logging.info("SUCCESS: test data was loaded successfully")
 
-        # label both df to merge them and be able to split them
-        data_train['Set'] = 'train'
-        data_test['Set'] = 'test'
+            except FileNotFoundError:
+                print("file or directory not found. Please double check the path and names")
+                logging.error("FAILED: file or directory not found")
+
+            # label both df to merge them and be able to split them
+            data_train['Set'] = 'train'
+            data_test['Set'] = 'test'
         
-        # Mergin both df in one
-        pandas_df = pd.concat([data_train, data_test], ignore_index=True, sort=False)
+            # Mergin both df in one
+            pandas_df = pd.concat([data_train, data_test], ignore_index=True, sort=False)
         return pandas_df
 
     
@@ -75,7 +94,7 @@ class FeatureEngineeringPipeline(object):
         :rtype: pd.DataFrame 
         """
         logging.info("INIT: data transformation")
-        # FEATURES ENGINEERING: Calculing how old is the shop (current year - Establishment_Year)
+        # FEATURES ENGINEERING: Calculing how old is the shop(current year-Establishment_Year)
         df['Outlet_Establishment_Year'] = 2020 - df['Outlet_Establishment_Year']
 
         # Cleaning: Unifying labels for 'Item_Fat_Content'
@@ -87,7 +106,7 @@ class FeatureEngineeringPipeline(object):
         item_list = list(df[df['Item_Weight'].isnull()]['Item_Identifier'].unique())
         for item in item_list:
             mode = (df[df['Item_Identifier'] == item][['Item_Weight']]).mode().iloc[0,0] 
-            df.loc[df['Item_Identifier'] == item, 'Item_Weight'] = mode 
+            df.loc[df['Item_Identifier'] == item, 'Item_Weight'] = mode
         
         # Cleaning: Imputing missing data for Outlet_Size with the value = "small"
         outlet_list = list(df[df['Outlet_Size'].isnull()]['Outlet_Identifier'].unique())
@@ -109,12 +128,14 @@ class FeatureEngineeringPipeline(object):
                           'Soft Drinks': 'Drinks', 'Hard Drinks': 'Drinks', 'Dairy': 'Drinks'}
         
         df['Item_Type'] = df['Item_Type'].replace(dict_Item_Type)
+        
 
         # FEATURES ENGINEERING: adding new categorie to 'Item_Fat_Content'
         df.loc[df['Item_Type'] == 'Non perishable', 'Item_Fat_Content'] = 'NA'
 
         # FEATURES ENGINEERING: encoding prices levels in 'Item_MRP'
-        df['Item_MRP'] = pd.qcut(df['Item_MRP'], 4, labels = [1, 2, 3, 4])
+        if 'Item_MRP' in df.columns and pd.api.types.is_numeric_dtype(df['Item_MRP']):
+            df['Item_MRP'] = pd.qcut(df['Item_MRP'], 4, labels = [1, 2, 3, 4])
 
         # FEATURES ENGINEERING: encoding ordinal variable
         dataframe = df.drop(columns=['Item_Type', 'Item_Fat_Content']).copy()
@@ -145,21 +166,27 @@ class FeatureEngineeringPipeline(object):
         # Drop non informative features
         dataset = transformed_dataframe.drop(columns=['Item_Identifier', 'Outlet_Identifier'])
 
-        # split train & test
-        df_train = dataset.loc[dataset['Set'] == 'train']
-        df_test = dataset.loc[dataset['Set'] == 'test']
+        if args.json_path:
+            json_path = args.json_path
+            logging.info(f"Received JSON path: {json_path}")
+            dataset.to_csv(self.output_path + '/custom_data.csv', index=False)
+            logging.info("SUCCESS: custom data was saved successfully")
+        else:
+            # split train & test
+            df_train = dataset.loc[dataset['Set'] == 'train']
+            df_test = dataset.loc[dataset['Set'] == 'test']
 
-        df_train_copy = df_train.copy()
-        df_test_copy = df_test.copy()
+            df_train_copy = df_train.copy()
+            df_test_copy = df_test.copy()
 
-        # drop features without data
-        df_train_copy.drop(['Set'], axis=1, inplace=True)
-        df_test_copy.drop(['Item_Outlet_Sales','Set'], axis=1, inplace=True)
+            # drop features without data
+            df_train_copy.drop(['Set'], axis=1, inplace=True)
+            df_test_copy.drop(['Item_Outlet_Sales','Set'], axis=1, inplace=True)
 
-        # save datasets
-        df_train_copy.to_csv(self.output_path + '/train_final.csv', index=False)
-        df_test_copy.to_csv(self.output_path + '/test_final.csv', index=False)
-        logging.info("SUCCESS: train & test data was saved successfully")
+            # save datasets
+            df_train_copy.to_csv(self.output_path + '/train_final.csv', index=False)
+            df_test_copy.to_csv(self.output_path + '/test_final.csv', index=False)
+            logging.info("SUCCESS: train & test data was saved successfully")
 
         return None
 

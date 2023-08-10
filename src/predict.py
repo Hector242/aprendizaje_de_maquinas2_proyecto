@@ -13,6 +13,7 @@ import logging
 import sys
 import pandas as pd
 import pickle
+import argparse
 
 # avoiding traceback
 sys.excepthook = lambda exctype,exc,traceback : print("{}: {}".format(exctype.__name__,exc))
@@ -25,6 +26,11 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
+
+# taking arguments with json-path
+parser = argparse.ArgumentParser(description="Json from user")
+parser.add_argument("--json-path", type=str, help="Path to Json file")
+args = parser.parse_args()
 
 class MakePredictionPipeline(object):
     
@@ -42,14 +48,38 @@ class MakePredictionPipeline(object):
         .rtype test_dataset: pd.Dataframe
         """
         logging.info("INIT: load test dataset")
-        try:
-            # Load test dataset
-            test_dataset = pd.read_csv(self.input_path + '/test_final.csv')
-            logging.info("SUCCESS: test data was loaded successfully")
+        if args.json_path:
+            json_path = args.json_path
+            logging.info(f"Received JSON path: {json_path}")
 
-        except FileNotFoundError:
-            print("file or directory not found ->" + self.input_path + "/test_final.csv")
-            logging.error("FAILED: file or directory not found")
+            try:
+                # Load json-data for inference
+                test_dataset = pd.read_csv(self.input_path + '/custom_data.csv')
+                logging.info("dataset from json loaded")
+
+                # adding missing features that are on train data
+                list_feature = ['Outlet_Type_Grocery Store', 'Outlet_Type_Supermarket Type1',
+                                'Outlet_Type_Supermarket Type2', 'Outlet_Type_Supermarket Type3']
+                # to add the right order
+                test_dataset.drop(columns='Outlet_Type_Supermarket Type1', inplace=True)
+
+                for column in list_feature:
+                    test_dataset[column] = 0
+
+            except ValueError as ve:
+                logging.error(f"FAILED: ValueError occurred: {ve}")
+            except Exception as e:
+                logging.error(f"FAILED: An unexpected error occurre: {e}")
+
+        else:
+            try:
+                # Load test dataset
+                test_dataset = pd.read_csv(self.input_path + '/test_final.csv')
+                logging.info("SUCCESS: test data was loaded successfully")
+
+            except FileNotFoundError:
+                print("file or directory not found ->" + self.input_path + "/test_final.csv")
+                logging.error("FAILED: file or directory not found")
 
         return test_dataset
 
@@ -74,8 +104,6 @@ class MakePredictionPipeline(object):
             print("file or directory not found ->" + model_pkl_file)
             logging.error("FAILED: file or directory not found")
 
-        
-
         return model
 
 
@@ -93,8 +121,15 @@ class MakePredictionPipeline(object):
         :rtype y_pred: pd.Dataframe
         """
         logging.info("INIT: starting model predictions")
-        # make predictions over test dataset
-        y_pred = model.predict(test_data)
+        try:
+            # make predictions over test dataset
+            y_pred = model.predict(test_data)
+            logging.info("SUCCESS: Prediction passed successfully")
+
+        except ValueError as ve:
+            logging.error(f"FAILED: ValueError occurred during prediction: {ve}")
+        except Exception as e:
+            logging.error(f"FAILED: An unexpected error occurred during prediction: {e}")
 
         #convert to datafram
         y_pred = pd.DataFrame(y_pred)

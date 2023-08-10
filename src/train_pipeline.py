@@ -3,6 +3,7 @@ import logging
 
 # adding logging
 logging.basicConfig(
+    filename='../logs/TrainPipe.log',
     level=logging.INFO,
     filemode='w',
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
