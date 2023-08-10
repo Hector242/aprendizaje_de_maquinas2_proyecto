@@ -37,10 +37,10 @@ Los datos transformados se guardan en el directorio /features. Aquí se tendrán
 La data raw se encuentra /data.
 
 ## Notebook
-En el directorio Notebook se encuentran todas las notebooks. tanto las proporcionadas por el cientifico de datos como la que optimiza los hiperparamentros. Por otro lado, hay una tercera notebook que se llama Prueba y esa notebook se testeo que el pipeline de procesamiento no afectara los resultados que el cientifico de datos haya optinido en la notebook.
+En el directorio Notebook se encuentran todas las notebooks. tanto las proporcionadas por el cientifico de datos como la que optimiza los hiperparamentros. Por otro lado, hay una tercera notebook que se llama Prueba y en esa notebook se testeo que el pipeline de procesamiento no afectara los resultados que el cientifico de datos optuvo en la notebook original.
 
 ## Model
-El modelo luego de que se entrena es guardado en un plk y se va a encontrar en el directorio /model_trained.
+El modelo luego de que se entrena es guardado en un .plk y se va a encontrar en el directorio /model_trained.
 
 ## Predictions
 Las predicciones siempre se guardan en un .csv en el directorio /predictions.
