@@ -1,3 +1,10 @@
+"""
+train_pipeline.py
+
+DESCRIPTIÓN: train_pipeline.py will run the pipeline to train the model 
+AUTOR: Hector Sanchez
+FECHA:09/08/2023
+"""
 import subprocess
 import logging
 

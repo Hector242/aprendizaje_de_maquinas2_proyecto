@@ -1,11 +1,9 @@
 """
 predict.py
 
-COMPLETAR DOCSTRING
-
-DESCRIPCIÓN:
-AUTOR:
-FECHA:
+DESCRIPCIÓN:predict.py will give prediction on a .csv from a test datset or from custom file
+AUTOR: Hector Sanchez
+FECHA:09/08/2023
 """
 
 # Imports
@@ -27,7 +25,7 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 
-# taking arguments with json-path
+# allowing and taking arguments with --json-path
 parser = argparse.ArgumentParser(description="Json from user")
 parser.add_argument("--json-path", type=str, help="Path to Json file")
 args = parser.parse_args()
@@ -48,6 +46,7 @@ class MakePredictionPipeline(object):
         .rtype test_dataset: pd.Dataframe
         """
         logging.info("INIT: load test dataset")
+        # chooce between --json-path provided or not
         if args.json_path:
             json_path = args.json_path
             logging.info(f"Received JSON path: {json_path}")
@@ -70,7 +69,6 @@ class MakePredictionPipeline(object):
                 logging.error(f"FAILED: ValueError occurred: {ve}")
             except Exception as e:
                 logging.error(f"FAILED: An unexpected error occurre: {e}")
-
         else:
             try:
                 # Load test dataset
@@ -92,7 +90,6 @@ class MakePredictionPipeline(object):
         """ 
         # Get path
         model_pkl_file = self.model_path + '/model.pkl'
-
         logging.info("INIT: load model")
         try:
             # load model from pickle file

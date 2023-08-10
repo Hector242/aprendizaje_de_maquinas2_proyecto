@@ -1,11 +1,9 @@
 """
 train.py
 
-COMPLETAR DOCSTRING
-
-DESCRIPCIÓN:
-AUTOR:
-FECHA:
+DESCRIPCIÓN: train.py will run the training job
+AUTOR: Hector Sanchez
+FECHA:09/08/2023
 """
 
 # Imports

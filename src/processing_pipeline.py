@@ -1,3 +1,10 @@
+"""
+processing_pipeline.py
+
+DESCRIPTIÓN: processing_pipeline.py it's for run the whole pipeline to train and test the model 
+AUTOR: Hector Sanchez
+FECHA:09/08/2023
+"""
 import subprocess
 import logging
 
@@ -10,22 +17,23 @@ logging.basicConfig(
 )
 
 # Menu Function
-def print_menu():
+def print_menu()->None:
     print("""
-    Please, on the following question we will
-    need to choose with yes or no. The question
-    will be related if you want or not to use
-    Test dataset for inference or you want to
-    use a custom Json file.
+    On the following question reply with yes or no. 
+    
+    The question will ask you if you want or not to use
+    Test dataset for inference. In case you choose no, you
+    will require to provide a custom Json file.
+    
+    The Path to this Json file is ../Notebook/example.json
     """)
-
 
 # Pipeline entrypoint
 try:
     # asking user for data
     print_menu()
     choice = input("Are you using Default Test for prediction: ")
-
+    # chooce between --json-path provided or not
     if choice == "no":
         # Json path from user
         json_path = input("Please, provide the Json file path: ")

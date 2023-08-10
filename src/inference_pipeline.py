@@ -1,3 +1,10 @@
+"""
+inference_pipeline.py
+
+DESCRIPTIÓN: inference_pipeline.py will run the pipeline for make inference from the model 
+AUTOR: Hector Sanchez
+FECHA:09/08/2023
+"""
 import subprocess
 import logging
 import argparse
@@ -11,7 +18,7 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S',
 )
 
-# allowing argument when calling script
+# allowing and taking arguments with --json-path
 parser = argparse.ArgumentParser(description="Json from user")
 parser.add_argument("--json-path", type=str, help="Path to Json file")
 args = parser.parse_args()
@@ -19,7 +26,7 @@ args = parser.parse_args()
 
 # Pipeline entrypoint
 try:
-    
+    # chooce between --json-path provided or not
     if args.json_path:
         json_path = args.json_path
         logging.info(f"Received JSON path: {json_path}")

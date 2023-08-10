@@ -1,11 +1,9 @@
 """
 feature_engineering.py
 
-COMPLETAR DOCSTRING
-
 DESCRIPTIÓN: feature engineering.py it's for preprocess the data for ML usage 
 AUTOR: Hector Sanchez
-FECHA:-
+FECHA:09/08/2023
 """
 
 # Imports
@@ -27,7 +25,7 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S',
 )
 
-# taking arguments with json-path
+# allowing and taking arguments with --json-path
 parser = argparse.ArgumentParser(description="Json from user")
 parser.add_argument("--json-path", type=str, help="Path to Json file")
 args = parser.parse_args()
@@ -46,6 +44,7 @@ class FeatureEngineeringPipeline(object):
         :rtype: pd.DataFrame
         """
         logging.info("INIT: load train and test datasets")
+        # chooce between --json-path provided or not
         if args.json_path:
             json_path = args.json_path
             logging.info(f"Received JSON path: {json_path}")
@@ -53,7 +52,6 @@ class FeatureEngineeringPipeline(object):
                 # Load json-data for inference
                 pandas_df = pd.read_json(json_path, orient='index').T
                 logging.info("dataset from json loaded")
-
             except ValueError as ve:
                 logging.error(f"FAILED: ValueError occurred during prediction: {ve}")
             except Exception as e:
@@ -165,7 +163,7 @@ class FeatureEngineeringPipeline(object):
         logging.info("INIT: saving train & test data")
         # Drop non informative features
         dataset = transformed_dataframe.drop(columns=['Item_Identifier', 'Outlet_Identifier'])
-
+        # chooce between --json-path provided or not
         if args.json_path:
             json_path = args.json_path
             logging.info(f"Received JSON path: {json_path}")
