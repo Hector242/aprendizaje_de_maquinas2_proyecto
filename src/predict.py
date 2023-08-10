@@ -55,15 +55,20 @@ class MakePredictionPipeline(object):
                 # Load json-data for inference
                 test_dataset = pd.read_csv(self.input_path + '/custom_data.csv')
                 logging.info("dataset from json loaded")
+                
+                # drop column if existed
+                columns_to_check = ['Outlet_Type_Supermarket Type1', 'Outlet_Type_Supermarket Type2', 
+                                    'Outlet_Type_Supermarket Type3', 'Outlet_Type_Grocery Store']
 
-                # adding missing features that are on train data
+                for column in columns_to_check:
+                    if column in test_dataset.columns:
+                        test_dataset.drop(columns=column, inplace=True)
+                
+                # adding missing features that are on train data in the right order
                 list_feature = ['Outlet_Type_Grocery Store', 'Outlet_Type_Supermarket Type1',
                                 'Outlet_Type_Supermarket Type2', 'Outlet_Type_Supermarket Type3']
-                # to add the right order
-                test_dataset.drop(columns='Outlet_Type_Supermarket Type1', inplace=True)
-
                 for column in list_feature:
-                    test_dataset[column] = 0
+                    test_dataset[column] = 0 #fille it with 0
 
             except ValueError as ve:
                 logging.error(f"FAILED: ValueError occurred: {ve}")

@@ -1,7 +1,7 @@
-2023-08-10 09:43:47 - root - INFO - INIT: load train and test datasets
-2023-08-10 09:43:47 - root - INFO - SUCCESS: training data was loaded successfully
-2023-08-10 09:43:47 - root - INFO - SUCCESS: test data was loaded successfully
-2023-08-10 09:43:47 - root - INFO - INIT: data transformation
-2023-08-10 09:43:49 - root - INFO - SUCCESS: data was successfully transformed
-2023-08-10 09:43:49 - root - INFO - INIT: saving train & test data
-2023-08-10 09:43:49 - root - INFO - SUCCESS: train & test data was saved successfully
+2023-08-10 10:27:11 - root - INFO - INIT: load train and test datasets
+2023-08-10 10:27:11 - root - INFO - SUCCESS: training data was loaded successfully
+2023-08-10 10:27:11 - root - INFO - SUCCESS: test data was loaded successfully
+2023-08-10 10:27:11 - root - INFO - INIT: data transformation
+2023-08-10 10:27:13 - root - INFO - SUCCESS: data was successfully transformed
+2023-08-10 10:27:13 - root - INFO - INIT: saving train & test data
+2023-08-10 10:27:13 - root - INFO - SUCCESS: train & test data was saved successfully
